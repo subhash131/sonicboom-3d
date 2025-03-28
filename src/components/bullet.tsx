@@ -1,7 +1,13 @@
 import { RapierRigidBody, RigidBody, vec3 } from "@react-three/rapier";
-import { isHost, PlayerState } from "playroomkit";
+import { useIsHost } from "playroomkit";
 import React, { useEffect, useRef } from "react";
 import { MeshBasicMaterial, Vector3 } from "three";
+
+interface BulletUserData {
+  type: string;
+  player: string;
+  damage: number;
+}
 
 const BULLET_SPEED = 20;
 
@@ -25,6 +31,7 @@ const Bullet = ({
   onHit: (bulletId: string, position: Vector3) => void;
 }) => {
   const rigidBody = useRef<RapierRigidBody>(null);
+  const isHost = useIsHost();
 
   useEffect(() => {
     const velocity = {
@@ -46,7 +53,10 @@ const Bullet = ({
           damage: 10,
         }}
         onIntersectionEnter={(e) => {
-          if (isHost() && e.other.rigidBody!.userData!.type !== "bullet") {
+          const otherUserData = e.other.rigidBody?.userData as
+            | BulletUserData
+            | undefined;
+          if (isHost && otherUserData?.type !== "bullet") {
             rigidBody.current?.setEnabled(false);
             onHit(id, vec3(rigidBody.current?.translation()));
           }

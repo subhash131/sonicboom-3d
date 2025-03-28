@@ -82,18 +82,18 @@ export const Controller = ({
     }
 
     if (joyStick.isPressed("fire")) {
-      // if (isHost) {
-      if (Date.now() - lastShoot.current > FIRE_RATE) {
-        lastShoot.current = Date.now();
-        const newBullet: TBullet = {
-          id: state.id + "-" + +new Date(),
-          position: vec3(rigidBody.current.translation()),
-          angle,
-          player: state.id,
-        };
-        onFire(newBullet);
+      if (isHost) {
+        if (Date.now() - lastShoot.current > FIRE_RATE) {
+          lastShoot.current = Date.now();
+          const newBullet: TBullet = {
+            id: state.id + "-" + +new Date(),
+            position: vec3(rigidBody.current.translation()),
+            angle,
+            player: state.id,
+          };
+          onFire(newBullet);
+        }
       }
-      // }
     }
   });
 
@@ -106,10 +106,7 @@ export const Controller = ({
         linearDamping={12}
         lockRotations
         type={isHost ? "dynamic" : "kinematicPosition"}
-        onIntersectionEnter={({ other }) => {
-          if (isHost && other.rigidBody!.userData!.type === "bullet") {
-          }
-        }}
+        onIntersectionEnter={({ other }) => {}}
       >
         <PlayerInfo name={state.getProfile().name} />
         <group ref={character}>
